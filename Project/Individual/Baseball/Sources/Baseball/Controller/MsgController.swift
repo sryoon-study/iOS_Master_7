@@ -6,6 +6,10 @@ class MsgController {
         return MsgModel.welcomeMessage
     }
 
+    func getMenuMessage() -> String {
+        return MsgModel.menuMessage
+    }
+
     func getstartingMessage() -> String {
         return MsgModel.startingMessage
     }
@@ -36,5 +40,17 @@ class MsgController {
         
     func getInvalidAccessMessage() -> String {
         return MsgModel.invalidAccessMessage
+    }
+
+    func getRecordTitleMessage() -> String {
+        return MsgModel.recordTitleMessage
+    }
+    
+    func getRecordListMessage() -> String {
+        return MsgModel.recordlistMessage
+    }    
+
+    func getNoneRecordMessage() -> String {
+        return MsgModel.noneRecordMessage
     }
 }
