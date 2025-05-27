@@ -11,6 +11,8 @@ class GameController {
     let answer = AnswerController()
     //RecordController 객체 생성
     let records = RecordController()
+    //ConsoleView 객체 생성
+    let view = ConsoleView()
   
   
     //메인메뉴
@@ -21,27 +23,26 @@ class GameController {
 
             //최초라면 환영 메시지 출력
             if isFirst{
-                print(msg.getWelcomeMessage())
+                view.showMessage(msg.getWelcomeMessage())
                 isFirst = false
             }
             
             //메뉴 메시지출력
-            print(msg.getMenuMessage())
-            
+            view.showMessage(msg.getMenuMessage())
+
             //숫자 입력받기
-                guard let input = inputNumber.getInputMenuNumber() else {
+                guard let input = inputNumber.getInputMenuNumber(), let selected = Menu(rawValue: input) else {
                     // 잘못된 입력 메시지 출력
-                    print(msg.getInvalidInputMenuNumberMessage())
+                    view.showMessage(msg.getInvalidInputMenuNumberMessage())
                     continue
                 }
-                switch input {
-                    case 1: startGame()
-                    case 2: showRecords()
-                    case 3: exitGame()
-                    default:
-                        //비정상적인 접근 방어코드
-                        print(msg.getInvalidAccessMessage())
-                        exit(1)
+                switch selected {
+                case .start:
+                    startGame()
+                case .records:
+                    showRecords()
+                case .exit:
+                    exitGame()
                 }
             
             }
@@ -51,23 +52,23 @@ class GameController {
     //야구게임
     func startGame() {
         //게임 시작 메시지 출력
-        print(msg.getstartingMessage())
+        view.showMessage(msg.getStartingMessage())
         //정답 생성하기
         let answerArray = answer.createAnswer()
         //테스트용 정답출력
-        print("testcode : \(answerArray)")
+        view.showMessage("testcode : \(answerArray)")
 
         //시행횟수 변수
         var tryCnt=0
 
         while true{        
             //숫자입력 메시지 출력
-            print(msg.getRequireNumberMessage())
+            view.showMessage(msg.getRequireNumberMessage())
 
             //숫자 입력받기
             guard let input = inputNumber.getInputBaseballNumber() else {
                 // 잘못된 입력 메시지 출력
-                print(msg.getInvalidInputGameNumberMessage())
+                view.showMessage(msg.getInvalidInputGameNumberMessage())
                 continue
             }
 
@@ -76,7 +77,7 @@ class GameController {
 
             //판정 결과 출력
             let result = answer.checkAnswer(input)
-            print(result)
+            view.showMessage(result)
 
             //정답일 경우 break
             if input == answer.answer {
@@ -92,18 +93,18 @@ class GameController {
 
          if records.isRecord() {
             //기록이 있을 경우
-            print(msg.getRecordTitleMessage())
-            print(records.makeRecordList())
+            view.showMessage(msg.getRecordTitleMessage())
+            view.showMessage(records.makeRecordList())
         } else {
             //기록이 없을 경우
-            print(msg.getNoneRecordMessage())
+            view.showMessage(msg.getNoneRecordMessage())
         }
 
     }
 
     func exitGame(){
         //종료 메시지 출력
-        print(msg.getShutDownMessage())
+        view.showMessage(msg.getShutDownMessage())
 
         exit(0)
     }

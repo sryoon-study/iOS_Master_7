@@ -10,7 +10,7 @@ class MsgController {
         return MsgModel.menuMessage
     }
 
-    func getstartingMessage() -> String {
+    func getStartingMessage() -> String {
         return MsgModel.startingMessage
     }
 

@@ -7,7 +7,7 @@ class InputNumberController{
     func getInputMenuNumber()-> Int?{
         //메뉴 유효성 검사
         guard let input = readLine(), checkInputMenuNumber(input) else {
-            //TODO 예외처리
+            //예외처리
             return nil
         }
         return Int(input)
@@ -18,7 +18,7 @@ class InputNumberController{
 
         //공백체크, 입력받은 값이 세자리 정수인지 체크
         guard let input = readLine(), checkInputBaseballNumber(input) else {
-            //TODO 예외처리
+            //예외처리
             return nil
         }
 
@@ -31,7 +31,7 @@ class InputNumberController{
         //숫자를 받았는지 체크
         guard let intInput = Int(input) else { return false }
         //메뉴 안에 있는지 체크
-        return MenuModel.mainMenu.keys.contains(intInput)
+        return Menu.isValid(intInput)
     }
 
 
