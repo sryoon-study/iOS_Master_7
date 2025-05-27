@@ -16,18 +16,12 @@ class InputNumberController{
     }
 
     //유효성 체크
-    func checkInputNumber(_ input: String)-> Bool{
-        //길이검사
-        guard input.count == 3 else { return false }
-
-        //첫 글자가 0인지 검사
-        if input.first == "0"{
-            return false
-        }
-
-        //전부 숫자인지 검사
-        let isAllDigits = input.allSatisfy { $0.isNumber }
-        return isAllDigits
+    func checkInputNumber(_ input: String) -> Bool {
+        //길이가 3일것, 처음이 0이 아닐것, 숫자일것, 중복되지 않을것
+        return input.count == 3 &&
+                input.first != "0" &&
+                input.allSatisfy(\.isNumber) &&
+                Set(input).count == 3
     }
 
     // 입력 자열을 Int 배열로 변환

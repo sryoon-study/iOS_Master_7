@@ -8,50 +8,42 @@ class AnswerController {
 
     // 정답 생성
     func createAnswer() -> [Int] {
-        while true {
-            let number = Int.random(in: 100...999)
-            let digits = String(number).compactMap { $0.wholeNumberValue }
-            let digitSet = Set(digits)
+        //(1) 1에서 9까지 무작위로 섞어서 1개를 추출
+        let firstDigit = Array(1...9).shuffled().prefix(1)
+        //(2) 0에서 9 중 (1)에서 뽑은 숫자를 제외하고 무작위로 섞어서 2개를 추출
+        let remainingDigits = Array(0...9).filter { !firstDigit.contains($0) }.shuffled().prefix(2)
+        //(1)과 (2를) 합침
+        let digits = firstDigit + remainingDigits
 
-            if digitSet.count == 3 {
-                answer = digits
-                return digits
-            }
-        }
+        answer = Array(digits)
+
+        return answer
     }
 
     // 정답 체크
     func checkAnswer(_ input: [Int]) -> String {
-        // 정답 완전 일치 여부 확인
+
+        //완전히 일치할 경우 정답메시지 리턴
         if input == answer {
             return MsgModel.correctAnswerMessage
         }
 
-        var strikeCnt = 0
-        var ballCnt = 0
+        //일치하는 경우 스트라이크 카운트+1
+        let strikeCnt = zip(input, answer).filter { $0 == $1 }.count
+        
+        //포함하는 경우 볼카운트+1 - 스트라이크 카운트
+        let ballCnt = input.filter { answer.contains($0) }.count - strikeCnt
 
-        // 각 자리 비교
-        for i in 0..<3 {
-            if input[i] == answer[i] {
-                strikeCnt += 1
-            } else if answer.contains(input[i]) {
-                ballCnt += 1
-            }
-        }
-
-        // 결과 메시지 조합
+        //전부 불일치일 경우 nothing 메시지 출력
         if strikeCnt == 0 && ballCnt == 0 {
             return MsgModel.nothingMessage
         }
 
+        //결과 메시지 생성후 리턴
         var result = ""
-        if strikeCnt > 0 {
-            result += "\(strikeCnt)스트라이크 "
-        }
-        if ballCnt > 0 {
-            result += "\(ballCnt)볼"
-        }
+        if strikeCnt > 0 { result += "\(strikeCnt)스트라이크 " }
+        if ballCnt > 0 { result += "\(ballCnt)볼" }
 
-        return result
+        return result.trimmingCharacters(in: .whitespaces)
     }
 }
