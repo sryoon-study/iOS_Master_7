@@ -1,4 +1,4 @@
-//Controller/MsgController.swift
+// Controller/MsgController.swift
 import Foundation
 
 class MsgController {
@@ -37,7 +37,7 @@ class MsgController {
     func getShutDownMessage() -> String {
         return MsgModel.shutDownMessage
     }
-        
+
     func getInvalidAccessMessage() -> String {
         return MsgModel.invalidAccessMessage
     }
@@ -45,10 +45,10 @@ class MsgController {
     func getRecordTitleMessage() -> String {
         return MsgModel.recordTitleMessage
     }
-    
+
     func getRecordListMessage() -> String {
         return MsgModel.recordlistMessage
-    }    
+    }
 
     func getNoneRecordMessage() -> String {
         return MsgModel.noneRecordMessage
