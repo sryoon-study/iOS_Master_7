@@ -18,3 +18,10 @@ hamakko branch
 
 ### 실행파일
 - main.swift
+
+### 문서(z_Document)
+- Baseball 설계도.xlsx
+    - 요건정의
+    - 진행예제
+    - 플로우
+    - 체크리스트
