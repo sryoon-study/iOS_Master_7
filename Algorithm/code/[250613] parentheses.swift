@@ -4,7 +4,7 @@
 
 import Foundation
 
-//최초 풀ㅣ
+//최초 풀이
 func solution(_ s: String) -> Bool {
 
     var cnt = 0
