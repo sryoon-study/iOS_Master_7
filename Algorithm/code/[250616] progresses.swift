@@ -1,10 +1,6 @@
-//
-//  main.swift
-//  programmers
-//
-//  Created by Yoon on 6/5/25.
-//
-
+/*
+문제 페이지 : https://school.programmers.co.kr/learn/courses/30/lessons/42586
+*/
 
 import Foundation
 
