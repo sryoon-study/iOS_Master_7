@@ -9,39 +9,40 @@
 import Foundation
 
 
-func solution(_ cacheSize:Int, _ cities:[String]) -> Int {
-    
-    var time = 0
-    var cache: [String] = []
-    
-    for city in cities {
-        let lowerCasedCity = city.lowercased()
-        if let index = cache.firstIndex(of: lowerCasedCity) {
-            //cash hit
-            time += 1
-            cache.remove(at: index)
+func solution(_ answers:[Int]) -> [Int] {
+    let pattern = [
+        [1, 2, 3, 4, 5], [2, 1, 2, 3, 2, 4, 2, 5], [3, 3, 1, 1, 2, 2, 4, 4, 5, 5]
+    ]
+    var result: [Int] = []
+    pattern.forEach {
+        
+        var matchCount = 0
+        
+        if $0.count < answers.count {
+            
+            let multiple = Int(ceil(Double(answers.count) / Double($0.count)))
+            let arr = Array(repeating: $0, count: multiple).flatMap { $0 }
+            matchCount = zip(answers, arr).filter { $0 == $1 }.count
+            result.append(matchCount)
+            
         } else {
-            //cash miss
-            time += 5
-            if cache.count >= cacheSize {
-                if cacheSize > 0 {
-                    cache.removeFirst()
-                }
-            }
+            matchCount = zip(answers, $0).filter { $0 == $1 }.count
+            result.append(matchCount)
         }
-        if cacheSize > 0 {
-            cache.append(lowerCasedCity)
-        }
+        
     }
-    
-    return time
+    return result.enumerated()
+        .filter {$0.element == result.max()}
+        .map {$0.offset + 1}
 }
 
-let cities1 = ["Jeju", "Pangyo", "Seoul", "NewYork", "LA", "Jeju", "Pangyo", "Seoul", "NewYork", "LA"]
-let cities2 = ["Jeju", "Pangyo", "Seoul", "NewYork", "LA", "SanFrancisco", "Seoul", "Rome", "Paris", "Jeju", "NewYork", "Rome"]
 
-let cashSize1 = 3
-let cashSize2 = 2
 
-print(solution(cashSize1, cities1))
-print(solution(cashSize2, cities2))
+let answers1 = [1,2,3,4,5]
+let answers2 = [1,3,2,4,2]
+
+print(solution(answers1))
+print(solution(answers2))
+print(solution([]))
+
+
