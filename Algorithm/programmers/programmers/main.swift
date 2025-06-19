@@ -5,44 +5,50 @@
 //  Created by Yoon on 6/5/25.
 //
 
-
 import Foundation
 
-
-func solution(_ answers:[Int]) -> [Int] {
-    let pattern = [
-        [1, 2, 3, 4, 5], [2, 1, 2, 3, 2, 4, 2, 5], [3, 3, 1, 1, 2, 2, 4, 4, 5, 5]
-    ]
-    var result: [Int] = []
-    pattern.forEach {
-        
-        var matchCount = 0
-        
-        if $0.count < answers.count {
-            
-            let multiple = Int(ceil(Double(answers.count) / Double($0.count)))
-            let arr = Array(repeating: $0, count: multiple).flatMap { $0 }
-            matchCount = zip(answers, arr).filter { $0 == $1 }.count
-            result.append(matchCount)
-            
-        } else {
-            matchCount = zip(answers, $0).filter { $0 == $1 }.count
-            result.append(matchCount)
+func solution(_ k:Int, _ dungeons:[[Int]]) -> Int {
+    var allRoute: [[[Int]]] = []
+    permuteWirth(dungeons, dungeons.count-1, result: &allRoute)
+    var maxCount: Int = 0
+    
+    for routes in allRoute {
+        var hp = k
+        var count = 0
+        for route in routes {
+            if hp >= route[0] {
+                count += 1
+                hp -= route[1]
+            } else {
+                break
+            }
         }
-        
+        if maxCount < count {
+            maxCount = count
+        }
     }
-    return result.enumerated()
-        .filter {$0.element == result.max()}
-        .map {$0.offset + 1}
+    return maxCount
 }
 
 
+func permuteWirth<T>(_ a: [T], _ n: Int, result: inout [[T]]) {
+    if n == 0 {
+        result.append(a)
+    } else {
+        var a = a
+        permuteWirth(a, n - 1, result: &result)
+        for i in 0..<n {
+            a.swapAt(i, n)
+            permuteWirth(a, n - 1, result: &result)
+            a.swapAt(i, n)
+        }
+    }
+}
 
-let answers1 = [1,2,3,4,5]
-let answers2 = [1,3,2,4,2]
 
-print(solution(answers1))
-print(solution(answers2))
-print(solution([]))
+let k = 80
+var dungeons = [[80,20],[50,40],[30,10]]
+
+print(solution(k, dungeons))
 
 
