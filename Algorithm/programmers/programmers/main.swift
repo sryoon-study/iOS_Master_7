@@ -7,21 +7,27 @@
 
 import Foundation
 
-func solution(_ array:[Int], _ commands:[[Int]]) -> [Int] {
-    commands.map { (command) -> Int in
-        Array(array[(command[0] - 1)..<command[1]]).sorted()[command[2] - 1]
-    }
+func solution(_ citations:[Int]) -> Int {
+    let answer = citations.sorted(by: >)
+        .enumerated()
+        .filter { $0.element >= $0.offset + 1 }
+        .map { $0.offset + 1 }
+        .max() ?? 0
+    print(answer)
+    return -1
 }
 
-let array = [1, 5, 2, 6, 3, 7, 4]
-let commands = [[2, 5, 3], [4, 4, 1], [1, 7, 3]]
 
-print(solution(array, commands))
+print(solution([3, 0, 6, 1, 5, 4]))
+
+//  n편 중, h번 이상 인용된 논문이 h편 이상이고 나머지 논문이 h번 이하 인용되었다면 h의 최댓값
+
+// 6 5 3 1 0
+// 1 2 3 4 5  -> 3
+
+// 6 5 4 3 1 0
+// 1 2 3 4 5 6  -> 3
 
 
-func solution2(_ array:[Int], _ commands:[[Int]]) -> [Int] {
-    commands.map { command in
-        let (i, j, k) = (command[0], command[1], command[2])
-        return array[(i - 1)..<j].sorted()[k - 1]
-    }
-}
+// 6 5 4 4 3 1
+// 1 2 3 4 5 6
