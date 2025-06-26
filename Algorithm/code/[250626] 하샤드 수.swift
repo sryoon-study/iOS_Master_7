@@ -1,10 +1,3 @@
-//
-//  main.swift
-//  programmers
-//
-//  Created by Yoon on 6/5/25.
-//
-
 import Foundation
 
 func solution(_ x:Int) -> Bool {
@@ -14,4 +7,3 @@ func solution(_ x:Int) -> Bool {
 }
 
 solution(10)
-
