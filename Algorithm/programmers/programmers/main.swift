@@ -7,11 +7,21 @@
 
 import Foundation
 
-func solution(_ x:Int) -> Bool {
-    let digits = String(x).compactMap { $0.wholeNumberValue }
-    let sum = digits.reduce(0, +)
-    return x%sum == 0
+func solution(_ s: String) -> String {
+    var isToUpper = true
+    return s.reduce(into: "") { result, char in
+        if char == " " {
+            result.append(" ")
+            isToUpper = true
+        } else {
+            result.append(isToUpper ? String(char).uppercased() : String(char).lowercased())
+            isToUpper = false
+        }
+    }
 }
 
-solution(10)
+let s = "3people unFollowed me"
+print(solution(s))
+
+
 
