@@ -1,31 +1,57 @@
 
 import Foundation
 
-func solution(_ friends:[String], _ gifts:[String]) -> Int {
-    
-    var inderdict: [String: Int]
-    var dict: [String: [String: Int]]
-    
-    let splitGift = gifts.map { $0.split(separator: " ") }
-    
-    // 여기서부터 막힘
-    let tmp = friends.map { name in splitGift.map { $0[0] == name ? $0[1] : "" } }
-    print(tmp)
-    return 0
-    
+func solution(_ n:Int, _ arr1:[Int], _ arr2:[Int]) -> [String] {
+    return zip(arr1, arr2).map{ num1, num2 in
+        let orNum = num1 | num2
+        return (0..<n).reversed().map{ i in
+            (orNum & (1<<i) == 0 ? " " : "#")
+        }.joined()
+    }
 }
 
-let friends = ["muzi", "ryan", "frodo", "neo"]
-let gifts = ["muzi frodo", "muzi frodo", "ryan muzi", "ryan muzi", "ryan muzi", "frodo muzi", "frodo ryan", "neo muzi"]
-
-//let tmp = "muzi frodo"
-//print(tmp.split(separator: " "))
+let arr1 = [9, 20, 28, 18, 11]
+let arr2 = [30, 1, 21, 17, 28]
 
 
-print(solution(friends, gifts))
-
+print(solution(5, arr1, arr2))
 
 /*
- gifts의 원소는 "A B"형태의 문자열입니다. A는 선물을 준 친구의 이름을 B는 선물을 받은 친구의 이름을 의미하며 공백 하나로 구분됩니다.
- A와 B는 friends의 원소이며 A와 B가 같은 이름인 경우는 존재하지 않습니다.
+ ["#####", "# # #", "### #", "#  ##", "#####"]
  */
+
+func debugMergedBinary(n: Int, num1: Int, num2: Int) {
+    let merged = num1 | num2
+    let binary = String(merged, radix: 2)
+    let paddedBinary = String(repeating: "0", count: n - binary.count) + binary
+
+    print("=== 디버깅 시작 ===")
+    print("num1: \(num1) (\(String(num1, radix: 2)))")
+    print("num2: \(num2) (\(String(num2, radix: 2)))")
+    print("merged: \(merged) (\(paddedBinary))")
+    print()
+
+    print("순방향 (i: 0 → \(n-1)) 결과:")
+    var forwardResult = ""
+    for i in 0..<n {
+        let bit = (merged & (1 << i)) >> i
+        let symbol = bit == 1 ? "#" : " "
+        print("  i=\(i): bit=\(bit) → \(symbol)")
+        forwardResult.append(symbol)
+    }
+    print("→ forwardResult: '\(forwardResult)'")
+    print()
+
+    print("역방향 (i: \(n-1) → 0) 결과:")
+    var reverseResult = ""
+    for i in (0..<n).reversed() {
+        let bit = (merged & (1 << i)) >> i
+        let symbol = bit == 1 ? "#" : " "
+        print("  i=\(i): bit=\(bit) → \(symbol)")
+        reverseResult.append(symbol)
+    }
+    print("→ reverseResult: '\(reverseResult)'")
+    print("=== 디버깅 끝 ===")
+}
+
+debugMergedBinary(n: 5, num1: 18, num2: 17)
