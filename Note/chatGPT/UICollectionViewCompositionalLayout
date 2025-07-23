@@ -1,0 +1,151 @@
+좋습니다. 아래에 두 가지를 나누어 상세하게 설명드릴게요:
+
+---
+
+## ✅ 1. `UICollectionViewCompositionalLayout` & `UICollectionViewDiffableDataSource` 일반 사용법 요약
+
+### 1) `UICollectionViewCompositionalLayout` 이란?
+
+iOS 13+에서 도입된 레이아웃 시스템으로, 복잡한 컬렉션 뷰 구조를 선언적으로 구성할 수 있게 해줍니다.
+수평/수직 스크롤, 그리드, 리스트 등 다양한 형태를 섹션 단위로 설정 가능.
+
+#### 구성 단위
+
+* **Item (`NSCollectionLayoutItem`)**: 셀 하나
+* **Group (`NSCollectionLayoutGroup`)**: Item들의 묶음
+* **Section (`NSCollectionLayoutSection`)**: Group으로 구성된 하나의 컬렉션 뷰 섹션
+* **Layout (`UICollectionViewCompositionalLayout`)**: 전체 레이아웃
+
+```swift
+let item = NSCollectionLayoutItem(layoutSize: ...)
+let group = NSCollectionLayoutGroup.horizontal(layoutSize: ..., subitems: [item])
+let section = NSCollectionLayoutSection(group: group)
+let layout = UICollectionViewCompositionalLayout(section: section)
+```
+
+---
+
+### 2) `UICollectionViewDiffableDataSource` 이란?
+
+컬렉션 뷰나 테이블 뷰의 **데이터 소스 관리**를 snapshot 기반으로 선언적으로 처리하는 API입니다.
+
+#### 주요 특징
+
+* Section과 Item을 `enum`으로 구분
+* `apply(snapshot)`으로 뷰를 업데이트 (자동으로 diff 계산)
+* 데이터 갱신/삭제/삽입 시 reloadRows 필요 없음
+
+```swift
+enum Section { case main }
+enum Item: Hashable { case movie(MovieData) }
+
+let dataSource = UICollectionViewDiffableDataSource<Section, Item>(collectionView: collectionView) { ... }
+
+var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+snapshot.appendSections([.main])
+snapshot.appendItems(movieList)
+dataSource.apply(snapshot)
+```
+
+---
+
+## ✅ 2. 이 프로젝트 `MyPageViewController` 실제 구현 설명
+
+### 구조 개요
+
+* 유저 정보를 보여주는 `userInfo`
+* 예매 영화 `reservedMovie`
+* 관람 기록 `histories`
+  이 3개 섹션이 `CompositionalLayout` + `DiffableDataSource` 조합으로 동작합니다.
+
+---
+
+### 🧱 `UICollectionViewCompositionalLayout` 정의
+
+```swift
+collectionView = UICollectionView(frame: .zero, collectionViewLayout: makeLayout())
+```
+
+```swift
+func makeLayout() -> UICollectionViewLayout {
+    UICollectionViewCompositionalLayout { sectionIndex, _ in
+        guard let section = self.collectionViewDataSource.sectionIdentifier(for: sectionIndex) else { return nil }
+        switch section {
+        case .userInfo:
+            // 높이 200의 단일 셀
+        case .reservedMovie, .histories:
+            // 각 셀 높이 72, 헤더 뷰 포함
+        }
+    }
+}
+```
+
+> 💡 각 section 마다 서로 다른 셀 높이와 레이아웃을 제공해 유연하게 구성함
+
+---
+
+### 🧱 `UICollectionViewDiffableDataSource` 정의
+
+```swift
+lazy var collectionViewDataSource = makeDataSource(collectionView)
+
+func makeDataSource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Section, Item> {
+    let dataSource = UICollectionViewDiffableDataSource<Section, Item>(...)
+    dataSource.supplementaryViewProvider = ...
+    return dataSource
+}
+```
+
+* `Item` enum: `.userInfo(UserInfo)`, `.reservedMovie(MyMovie)`, `.histories(MyMovie)`
+* `Section` enum: `.userInfo`, `.reservedMovie`, `.histories`
+* 셀은 각각 `UserInfoCell`, `MovieCell`로 구성
+* 섹션 헤더는 `MyPageSectionHeaderView` 사용
+
+---
+
+### 🧱 `NSDiffableDataSourceSnapshot` 적용
+
+```swift
+var snapShot = NSDiffableDataSourceSnapshot<Section, Item>()
+snapShot.appendSections([.userInfo])
+snapShot.appendItems([.userInfo(userInfo)], toSection: .userInfo)
+
+snapShot.appendSections([.reservedMovie])
+snapShot.appendItems(reservedMovies.map { .reservedMovie($0) }, toSection: .reservedMovie)
+
+snapShot.appendSections([.histories])
+let historiesToShow = isExpanded ? all : firstThree
+snapShot.appendItems(historiesToShow.map { .histories($0) }, toSection: .histories)
+
+collectionViewDataSource.apply(snapShot)
+```
+
+> 💡 `isExpanded` 상태에 따라 관람 기록의 아이템 수를 동적으로 조절
+
+---
+
+### 📌 섹션 헤더의 더보기 버튼 처리
+
+```swift
+headerView.onTapMoreButton = {
+    self.isExpanded.toggle()
+    self.updateDataSorce()
+}
+```
+
+* 버튼 상태 토글 (`더보기 ↔ 접기`)
+* snapshot 갱신하여 데이터 뷰 업데이트
+
+---
+
+## ✅ 요약
+
+| 기술                                    | 용도                    | 이 프로젝트에서의 역할                                                    |
+| ------------------------------------- | --------------------- | --------------------------------------------------------------- |
+| `UICollectionViewCompositionalLayout` | 섹션별 유연한 레이아웃 구성       | `userInfo`: 200 높이 단일 셀, `reservedMovie` & `histories`: 리스트 스타일 |
+| `UICollectionViewDiffableDataSource`  | snapshot 기반 데이터 관리    | MVVM `state.userData` 기반으로 각 섹션 데이터 처리                          |
+| `NSDiffableDataSourceSnapshot`        | Section & Item 선언형 적용 | 더보기 버튼 클릭 시에도 간결하게 데이터 업데이트 가능                                  |
+
+---
+
+추가로 궁금한 부분이나 타 화면의 구조와 비교도 원하시면 언제든 말씀해주세요!
